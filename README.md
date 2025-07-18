@@ -1,9 +1,11 @@
-# TALL_refractory
+# Refractory T-ALL paper
 Code for paper: "A non-canonical lymphoblast in refractory childhood T-cell leukaemia"
+
 
 **Analyses**
 
 Code used to perform analyses of single-cell RNA sequencing and bulk RNA sequencing data.
+
 
 **Figures**
 
