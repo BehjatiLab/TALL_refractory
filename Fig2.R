@@ -9,7 +9,7 @@ library(ComplexHeatmap)
 ##### Figure 2B: Normal-to-leukaemia transcriptome comparison by logistic regression
 
 # Load data
-similarity_matrix = read.csv(file = paste0("Data/Fig2B_Logistic_Regression.csv"), row.names = 1, check.names = FALSE)
+similarity_matrix = read.csv(file = paste0("Source_Data/Fig2B_Logistic_Regression.csv"), row.names = 1, check.names = FALSE)
 similarity_matrix = as.matrix(similarity_matrix)
 
 # Ordering of rows and columns
@@ -70,7 +70,7 @@ conv_genes = c("DNTT", "RAG1", "RAG2", "CD5", "CD27", "CD1A", "CD8A", "CD8B")
 unconv_genes = c("GNG4", "ZNF683", "RORA", "KLRB1","EOMES", "KIT", "TBX21", "ZBTB16")
 
 # Generate matrix
-df = read.csv("Data/Fig2C_TALL_Marker_Genes.csv", check.names = FALSE)
+df = read.csv("Source_Data/Fig2C_TALL_Marker_Genes.csv", check.names = FALSE)
 df$category = paste0(df$timepoint, "_", df$response, "_", df$ZBTB16_status)
 df = df %>%
   group_by(category) %>%
@@ -87,6 +87,7 @@ mat = t(mat)
 column_df = df['category'] 
 column_df[c('V1', 'V2', 'V3')] = str_split_fixed(string = column_df$category, pattern = "_", n = 3)
 column_df$V1_V2 = paste0(column_df$V1, "_", column_df$V2)
+column_df$V1_V2 = factor(column_df$V1_V2, levels = c('D0_Responsive', 'D0_nonResponsive', 'D28_nonResponsive'))
 column_ha = HeatmapAnnotation(
   which = "column",
   "Group" = column_df$V1_V2,

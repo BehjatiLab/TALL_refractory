@@ -12,7 +12,7 @@ library(patchwork)
 
 ##### Fig4A: Princess Maxima Center (PMC) cohort - plotting against day 28 MRD categories
 
-df = read.csv("Data/Fig4A_PMC.csv")
+df = read.csv("Source_Data/Fig4A_PMC.csv")
 df$D28_MRD_category = factor(df$D28_MRD_category, levels = c("0", "0-1", "1-5", ">=5"))
 
 # Calculate number of individuals in each group
@@ -65,7 +65,7 @@ ggsave("Plots/Fig4A_PMC_MRD_Module.pdf", p, width = 3.2, height = 3.5)
 
 ##### Fig4B: COG AALL0434 cohort - plotting against day 28 MRD categories
 
-df = read.csv("Data/Fig4BC_COG.csv")
+df = read.csv("Source_Data/Fig4BC_COG.csv")
 df$D28_MRD_category = factor(df$D28_MRD_category, levels = c("0", "0-1", "1-5", ">=5"))
 
 # Calculate number of individuals in each group
@@ -74,12 +74,12 @@ print(table(df$D28_MRD_category, useNA = "always"))
 
 # Calculate p-values
 print("Fig4B_COG_MRD_ZBTB16")
-wilcox.test(x = df$ZBTB16_log_exp[df$D28_MRD_category %in% c(">=5")], y = df$ZBTB16_log_exp[df$D28_MRD_category %in% c("0", "0-1", "1-5")], alternative = "greater")
+wilcox.test(x = df$ZBTB16_logCPM[df$D28_MRD_category %in% c(">=5")], y = df$ZBTB16_logCPM[df$D28_MRD_category %in% c("0", "0-1", "1-5")], alternative = "greater")
 print("Fig4B_COG_MRD_Module")
 wilcox.test(x = df$Module_score[df$D28_MRD_category %in% c(">=5")], y = df$Module_score[df$D28_MRD_category %in% c("0", "0-1", "1-5")], alternative = "greater")
 
 # Boxplot of ZBTB16
-p = ggplot(df %>% drop_na(D28_MRD_category), aes(x = D28_MRD_category, y = ZBTB16_log_exp)) +
+p = ggplot(df %>% drop_na(D28_MRD_category), aes(x = D28_MRD_category, y = ZBTB16_logCPM)) +
   geom_boxplot(aes(fill = D28_MRD_category), col ="#000000", outlier.shape = NA, linewidth = 0.7) +
   scale_fill_manual(values = c("0" = "#1D71B8", "0-1" = "#20A7DB", "1-5" = "#A0D9EF", ">=5" = "#F77F11")) +
   geom_beeswarm(col ="#000000", alpha = 0.5, cex = 0.6, size = 1.8) +
@@ -110,7 +110,7 @@ p = ggplot(df %>% drop_na(D28_MRD_category), aes(x = D28_MRD_category, y = Modul
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
   )
-ggsave("Plots/Fig4B_COG_MRD_Module.pdf", p, width = 3.2, height = 3.5)
+ggsave("Plots/Fig4B_COG_MRD_Module.pdf", p, width = 3.3, height = 3.5)
 
 
 
@@ -118,7 +118,7 @@ ggsave("Plots/Fig4B_COG_MRD_Module.pdf", p, width = 3.2, height = 3.5)
 
 ##### Fig4C: COG AALL0434 cohort - survival curves
 
-df = read.csv("Data/Fig4BC_COG.csv")
+df = read.csv("Source_Data/Fig4BC_COG.csv")
 
 # Define OS_status as TRUE/FALSE/NA
 df$OS_status = as.logical(df$OS_status)
@@ -126,12 +126,12 @@ df$OS_status = as.logical(df$OS_status)
 # Define EFS_status as TRUE/FALSE/NA
 df$EFS_status = as.logical(df$EFS_status)
 
-# Stratify by ZBTB16_log_exp
+# Stratify by ZBTB16_logCPM
 df$ZBTB16_strata = NA
-df$ZBTB16_strata[df$ZBTB16_log_exp > quantile(df$ZBTB16_log_exp, 0.6667, na.rm = TRUE)] = "ZBTB16_high"
-df$ZBTB16_strata[df$ZBTB16_log_exp < quantile(df$ZBTB16_log_exp, 0.3333, na.rm = TRUE)] = "ZBTB16_low"
+df$ZBTB16_strata[df$ZBTB16_logCPM > quantile(df$ZBTB16_logCPM, 0.6667, na.rm = TRUE)] = "ZBTB16_high"
+df$ZBTB16_strata[df$ZBTB16_logCPM < quantile(df$ZBTB16_logCPM, 0.3333, na.rm = TRUE)] = "ZBTB16_low"
 
-# Stratify by Module_score_up_H
+# Stratify by Module_score
 df$Module_strata = NA
 df$Module_strata[df$Module_score > quantile(df$Module_score, 0.6667, na.rm = TRUE)] = "Module_high"
 df$Module_strata[df$Module_score < quantile(df$Module_score, 0.3333, na.rm = TRUE)] = "Module_low"
@@ -140,6 +140,10 @@ df$Module_strata[df$Module_score < quantile(df$Module_score, 0.3333, na.rm = TRU
 print("Fig4C_COG_Survival_strata")
 print(table(df$ZBTB16_strata))
 print(table(df$Module_strata))
+
+# Calculate number of individuals in CoxPH models
+print("Fig4D_Cox_ETP")
+print(table(df$ZBTB16_strata, df$Flow_subtype))
 
 
 
@@ -172,6 +176,8 @@ p = ggplot(plotdf, aes(x = Time, y = Prob, colour = Group, fill = Group)) +
   ggtitle(surv_pvalue(sfit)$pval) +
   theme_bw() +
   theme(
+    axis.ticks.length.x = unit(2, "mm"), 
+    axis.ticks.length.y = unit(2, "mm"), 
     legend.position = "bottom", 
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
@@ -209,6 +215,8 @@ p = ggplot(plotdf, aes(x = Time, y = Prob, colour = Group, fill = Group)) +
   ggtitle(surv_pvalue(sfit)$pval) +
   theme_bw() +
   theme(
+    axis.ticks.length.x = unit(2, "mm"), 
+    axis.ticks.length.y = unit(2, "mm"), 
     legend.position = "bottom", 
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
@@ -246,6 +254,8 @@ p = ggplot(plotdf, aes(x = Time, y = Prob, colour = Group, fill = Group)) +
   ggtitle(surv_pvalue(sfit)$pval) +
   theme_bw() +
   theme(
+    axis.ticks.length.x = unit(2, "mm"), 
+    axis.ticks.length.y = unit(2, "mm"), 
     legend.position = "bottom", 
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
@@ -283,6 +293,8 @@ p = ggplot(plotdf, aes(x = Time, y = Prob, colour = Group, fill = Group)) +
   ggtitle(surv_pvalue(sfit)$pval) +
   theme_bw() +
   theme(
+    axis.ticks.length.x = unit(2, "mm"), 
+    axis.ticks.length.y = unit(2, "mm"), 
     legend.position = "bottom", 
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
@@ -293,9 +305,9 @@ ggsave("Plots/Fig4C_COG_Survival_EFS_Module_strata.pdf", p, width = 4, height = 
 
 
 
-##### Fig4D: COG AALL0434 cohort - Cox-PH analysis of ZBTB16 vs ETP
+##### Fig4D: COG AALL0434 cohort - Cox-PH analysis of ZBTB16 (tertiles) vs ETP
 
-df = read.csv("Data/Fig4D_Cox_ETP.csv")
+df = read.csv("Source_Data/Fig4D_Cox_ETP.csv")
 df = df[df$model %in% c("ZBTB16_tertiles_ETP_exclude", "ZBTB16_tertiles_ETP_include"), ]
 df$model = factor(df$model, levels = c("ZBTB16_tertiles_ETP_exclude", "ZBTB16_tertiles_ETP_include"))
 df$variable = factor(df$variable, levels = c("ETP", "ZBTB16"))
@@ -386,7 +398,7 @@ p4 = ggplot(df[df$outcome == "EFS", ], aes(y = variable)) +
   )
 
 p = p1 + p2 + p3 + p4 + plot_layout(nrow = 1, ncol = 4, widths = c(1, 5, 1, 5), guides = "keep")
-ggsave("Plots/Fig4D_Cox_ETP.pdf", p, width = 8, height = 1.5)
+ggsave("Plots/Fig4D_Cox_ETP_tertiles.pdf", p, width = 8, height = 1.5)
 
 
 
@@ -394,7 +406,7 @@ ggsave("Plots/Fig4D_Cox_ETP.pdf", p, width = 8, height = 1.5)
 
 ##### Fig4E: COG AALL0434 cohort - Cox-PH analysis of ZBTB16 vs BMP
 
-df = read.csv("Data/Fig4E_Cox_BMP.csv")
+df = read.csv("Source_Data/Fig4E_Cox_BMP.csv")
 df$model = factor(df$model, levels = c("ZBTB16_module_BMP_119", "ZBTB16_module_BMP_17", "ZBTB16_module_BMP_9"))
 df$variable = factor(df$variable, levels = c("BMP", "ZBTB16"))
 df$pval_label = round(-log10(df$pval), digits = 1)
@@ -485,7 +497,5 @@ p4 = ggplot(df[df$outcome == "EFS", ], aes(y = variable)) +
 
 p = p1 + p2 + p3 + p4 + plot_layout(nrow = 1, ncol = 4, widths = c(1.5, 4.5, 1.5, 4.5), guides = "keep")
 ggsave("Plots/Fig4E_Cox_BMP.pdf", p, width = 7.5, height = 2)
-
-
 
 

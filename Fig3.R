@@ -8,7 +8,7 @@ library(patchwork)
 ##### Fig3B: ZBTB16 expression in Validation Cohort
 
 # Load ZBTB16 expression data
-df = read.csv("Data/Fig3B_ZBTB16_Validation_Cohort.csv")
+df = read.csv("Source_Data/Fig3B_ZBTB16_Validation_Cohort.csv")
 
 # MRD calculations for plotting
 df$MRD_D28 = as.numeric(df$MRD_D28)
