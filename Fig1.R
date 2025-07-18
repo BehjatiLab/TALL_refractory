@@ -9,7 +9,7 @@ library(ggrastr)
 
 ##### Fig1F: ZBTB16 expression in discovery cohort
 
-df = read.csv("Data/Fig1FG_ZBTB16_Discovery_Cohort.csv")
+df = read.csv("Source_Data/Fig1FG_ZBTB16_Discovery_Cohort.csv")
 
 df = df %>% 
   mutate(sample_cluster = paste0(sample_ID, "::", leiden)) %>%
@@ -116,7 +116,7 @@ list_of_sample_ID = c(
   'P018_TALL_D0_BM_GEX', 'P018_TALL_D28_BM_GEX'
 )
 
-df = read.csv("Data/Fig1FG_ZBTB16_Discovery_Cohort.csv")
+df = read.csv("Source_Data/Fig1FG_ZBTB16_Discovery_Cohort.csv")
 df = df[df$sample_ID %in% list_of_sample_ID, ]
 
 df_sample = df %>%
