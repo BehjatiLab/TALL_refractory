@@ -1,4 +1,4 @@
-########## T-ALL -- 361 T-ALL GOSH Scanpy combined ########## 
+########## Leukaemia -- 041 T-ALL GOSH Scanpy processing ########## 
 
 ##### Set up
 
@@ -15,7 +15,7 @@ import scanpy as sc
 sc.logging.print_header()
 
 # Set working directory
-#os.chdir('/lustre/scratch126/casm/team274sb/bl10/T-ALL/')
+#os.chdir('/lustre/scratch126/casm/team274sb/bl10/Leukaemia/')
 
 
 
@@ -29,16 +29,19 @@ g2m_genes = ["HMGB2", "CDK1", "NUSAP1", "UBE2C", "BIRC5", "TPX2", "TOP2A", "NDC8
 list_of_sample_ID = ['L026_TALL_D0_PleuralFluid', 'L028_TALL_D0_Blood', 'L029_TALL_D0_Blood', 'L084_TALL_D0', 'L086_InfantTALL_D0_Blood_R1', 'L086_InfantTALL_D0_Blood_R2', 'L088_InfantTALL_D0_Blood', 'L095_TALL_D0']
 
 # Load manifest
-manifest = pd.read_csv("/lustre/scratch126/casm/team274sb/bl10/B-ALL/Data/BALL_manifest.csv")
-manifest = manifest[manifest['Sample_ID'].isin(list_of_sample_ID)]
-manifest = manifest[manifest['Experiment'] == "GEX"]
-manifest = manifest.sort_values(by = ['Sample_ID'], ignore_index = True)
-print(manifest)
+manifest = pd.read_csv("Data/Leukaemia_manifest.csv")
+manifest = manifest[manifest['Library'] == "GEX"]
+manifest = manifest[manifest['Disease'] == "T-ALL"]
+manifest = manifest[manifest['Cohort'] == "GOSH"]
+manifest = manifest.sort_values(by = ['Patient_ID', 'Timepoint', 'Sample_ID'], ignore_index = True)
+
+# Generate list_of_sample_ID
+list_of_sample_ID = manifest['Sample_ID']
 print(list_of_sample_ID)
 print("Number of items =", len(list_of_sample_ID))
 
 # Load qc_limits
-qc_limits = pd.read_csv("/lustre/scratch126/casm/team274sb/bl10/B-ALL/Data/BALL_qc_limits.csv")
+qc_limits = pd.read_csv("Data/QC_limits.csv")
 
 
 
@@ -54,7 +57,7 @@ for i, sample_ID in enumerate(list_of_sample_ID):
     print(sample_ID)
     
     # Read SoupX adjusted count matrix
-    adata = sc.read_10x_mtx("/lustre/scratch126/casm/team274sb/bl10/B-ALL/Intermediate/011_SoupX/"+sample_ID+"/soupX_matrix", var_names = 'gene_symbols', make_unique = True)
+    adata = sc.read_10x_mtx("Intermediate/011_SoupX/"+sample_ID+"/soupX_matrix", var_names = 'gene_symbols', make_unique = True)
     adata.obs_names = [sample_ID+"::"+x for x in adata.obs_names]
     
     # Set sample_ID and cell_ID
@@ -72,7 +75,7 @@ for i, sample_ID in enumerate(list_of_sample_ID):
         'pct_counts_ribo' : 'percent_ribo'})
     
     # Input doublet_score and predicted_doublet
-    scrublet_df = pd.read_csv("/lustre/scratch126/casm/team274sb/bl10/B-ALL/Intermediate/012_Scrublet/"+sample_ID+".csv")
+    scrublet_df = pd.read_csv("Intermediate/012_Scrublet/"+sample_ID+".csv")
     mapping_dict = dict(zip(scrublet_df['barcode'], scrublet_df['doublet_score']))
     adata.obs['doublet_score'] = adata.obs['cell_ID'].map(mapping_dict)
     mapping_dict = dict(zip(scrublet_df['barcode'], scrublet_df['predicted_doublet']))
@@ -103,7 +106,7 @@ for i, sample_ID in enumerate(list_of_sample_ID):
 adata = anndata.concat(list_of_adata)
 
 # Save adata object containing raw counts
-adata.write("Intermediate/361_TALL_GOSH_Scanpy_combined/TALL_combined_raw_counts.h5ad")
+adata.write("Intermediate/041_TALL_GOSH_Scanpy/TALL_GOSH_raw_counts.h5ad")
 
 # Log-normalize
 sc.pp.normalize_total(adata, target_sum = 1e4)
@@ -138,8 +141,8 @@ sc.tl.score_genes_cell_cycle(adata, s_genes = s_genes, g2m_genes = g2m_genes)
 adata.obs.rename(columns = {'phase' : 'cell_cycle_phase'}, inplace = True)
 
 # Save adata.obs and adata
-adata.obs.to_csv("Intermediate/361_TALL_GOSH_Scanpy_combined/TALL_combined_obs.csv", index = False)
-adata.write("Intermediate/361_TALL_GOSH_Scanpy_combined/TALL_combined.h5ad")
+adata.obs.to_csv("Intermediate/041_TALL_GOSH_Scanpy/TALL_GOSH_obs.csv", index = False)
+adata.write("Intermediate/041_TALL_GOSH_Scanpy/TALL_GOSH.h5ad")
 
 
 
