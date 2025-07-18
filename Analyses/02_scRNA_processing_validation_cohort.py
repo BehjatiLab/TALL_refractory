@@ -130,8 +130,10 @@ sc.pp.neighbors(adata, n_pcs = 100, n_neighbors = 50)
 # Embed the neighborhood graph
 sc.tl.umap(adata, min_dist = 0.5)
 
-# Cluster the neighborhood graph (resolution = 4.0)
-sc.tl.leiden(adata, resolution = 4.0)
+# Cluster the neighborhood graph with varying resolutions
+for i, res in enumerate([1.0, 2.0, 3.0, 4.0, 5.0]):
+    sc.tl.leiden(adata, resolution = res)
+    adata.obs['leiden_'+str(res)] = adata.obs['leiden']
 
 # Call back log-normalized counts in .raw
 adata = adata.raw.to_adata()
