@@ -1,4 +1,4 @@
-########## Leukaemia -- 031 T-ALL (Discovery cohort) Scanpy combined ########## 
+########## Leukaemia -- 031 T-ALL (Discovery cohort) Scanpy processing ########## 
 
 ##### Set up
 
@@ -103,7 +103,7 @@ for i, sample_ID in enumerate(list_of_sample_ID):
 adata = anndata.concat(list_of_adata)
 
 # Save adata object containing raw counts
-adata.write("Intermediate/031_Scanpy_combined/TALL_combined_raw_counts.h5ad")
+adata.write("Intermediate/031_TALL_David_Scanpy/TALL_David_raw_counts.h5ad")
 
 # Log-normalize
 sc.pp.normalize_total(adata, target_sum = 1e4)
@@ -140,8 +140,8 @@ sc.tl.score_genes_cell_cycle(adata, s_genes = s_genes, g2m_genes = g2m_genes)
 adata.obs.rename(columns = {'phase' : 'cell_cycle_phase'}, inplace = True)
 
 # Save adata.obs and adata
-adata.obs.to_csv("Intermediate/031_Scanpy_combined/TALL_combined_obs.csv", index = False)
-adata.write("Intermediate/031_Scanpy_combined/TALL_combined.h5ad")
+adata.obs.to_csv("Intermediate/031_TALL_David_Scanpy/TALL_David_obs.csv", index = False)
+adata.write("Intermediate/031_TALL_David_Scanpy/TALL_David.h5ad")
 
 
 
