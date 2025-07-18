@@ -1,4 +1,4 @@
-########## Leukaemia -- 041 T-ALL GOSH Scanpy processing ########## 
+########## Leukaemia -- 041 T-ALL (Validation cohort) Scanpy processing ########## 
 
 ##### Set up
 
