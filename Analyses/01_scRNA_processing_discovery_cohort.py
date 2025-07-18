@@ -1,4 +1,4 @@
-########## T-ALL -- 061 Scanpy combined ########## 
+########## Leukaemia -- 061 T-ALL (Discovery cohort) Scanpy combined ########## 
 
 ##### Set up
 
@@ -15,7 +15,7 @@ import scanpy as sc
 sc.logging.print_header()
 
 # Set working directory
-#os.chdir('/lustre/scratch126/casm/team274sb/bl10/T-ALL/')
+#os.chdir('/lustre/scratch126/casm/team274sb/bl10/Leukaemia/')
 
 
 
@@ -30,10 +30,11 @@ g2m_genes = ["HMGB2", "CDK1", "NUSAP1", "UBE2C", "BIRC5", "TPX2", "TOP2A", "NDC8
 ### Load metadata
 
 # Load manifest
-manifest = pd.read_csv("Data/TALL_manifest.csv")
-manifest = manifest[manifest['Experiment'] == "GEX"]
-manifest = manifest[manifest['Omit'] == "No"]
-manifest.sort_values(by = ['Sample_ID'], inplace = True, ignore_index = True)
+manifest = pd.read_csv("Data/Leukaemia_manifest.csv")
+manifest = manifest[manifest['Library'] == "GEX"]
+manifest = manifest[manifest['Disease'] == "T-ALL"]
+manifest = manifest[manifest['Cohort'] == "DavidTALL"]
+manifest = manifest.sort_values(by = ['Patient_ID', 'Timepoint', 'Sample_ID'], ignore_index = True)
 
 # Generate list_of_sample_ID
 list_of_sample_ID = manifest['Sample_ID']
@@ -41,7 +42,7 @@ print(list_of_sample_ID)
 print("Number of items =", len(list_of_sample_ID))
 
 # Load qc_limits
-qc_limits = pd.read_csv("Data/TALL_qc_limits.csv")
+qc_limits = pd.read_csv("Data/QC_limits.csv")
 
 
 
